@@ -1,0 +1,1 @@
+add_nontest_target(proj proj.cpp)
