@@ -49,15 +49,16 @@ int main() {
 
         fmt::println("Time elapsed: {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count());
 
-        for (auto& vec : v1) {
+        fmt::println("[");
+        for (auto& vec : v2) {
             fmt::print("[ ");
             for(auto num : vec){
-                fmt::print("{} ", num);
+                fmt::print("{}/2 ", num);
             }
 
             fmt::println("]");
         }
-
+        fmt::println("]");
     }
 
 
