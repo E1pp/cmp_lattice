@@ -10,13 +10,13 @@ class Tester {
   void Test() const {
     arma::Mat<int> a(2, 2);
     a.fill(5);
-    
-    for(auto elem : a){
-        fmt::print("{} ", elem);
+
+    for (auto elem : a) {
+      fmt::print("{} ", elem);
     }
 
     fmt::println("Imagine testing your software");
   }
 };
 
-} // namespace cmp_lattice 
+}  // namespace cmp_lattice
