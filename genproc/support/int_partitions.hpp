@@ -6,63 +6,110 @@
 
 namespace cmp_lattice::support {
 
+namespace detail {
+
+template <typename U>
+using Vector = std::vector<U>;
+
+struct PositiveTag {};
+struct NegativeTag {};
+
 template <Filter TFilter>
-class IntegerPartitions {
- public:
-  template <typename U>
-  using Vector = std::vector<U>;
+static void CommitChanges(Vector<Vector<int>>& dest, Vector<int> insertible, TFilter& checker) {
+  if (checker(insertible)) {
+    dest.push_back(std::move(insertible));
+  }
+}
 
-  static Vector<Vector<int>> UniquePartitions(int n, TFilter instance) {
-    if (n == 0) {
-        return {{}};
-    }
+template <Filter TFilter>
+static Vector<Vector<int>> UniquePartitions(PositiveTag, int n, TFilter instance) {
+  if (n == 0) {
+      return {{}};
+  }
+  
+  Vector<Vector<int>> ans{};
+
+  Vector<int> numbers(n, 0);
+
+  int idx = 0;
+
+  numbers[idx] = n;
+
+  while (true) {
+    CommitChanges(ans,
+                  Vector<int>(numbers.begin(), numbers.begin() + idx + 1), instance);
     
-    Vector<Vector<int>> ans{};
+    int remainder = 0;
 
-    Vector<int> numbers(n, 0);
-
-    int idx = 0;
-
-    numbers[idx] = n;
-
-    while (true) {
-      CommitChanges(ans,
-                    Vector<int>(numbers.begin(), numbers.begin() + idx + 1), instance);
-      
-      int remainder = 0;
-
-      while (idx >= 0 && numbers[idx] == 1) {
-        remainder++;
-        idx--;
-      }
-
-      if (idx < 0) {
-        break;
-      }
-
-      numbers[idx]--;
+    while (idx >= 0 && numbers[idx] == 1) {
       remainder++;
+      idx--;
+    }
 
-      while (remainder > numbers[idx]) {
-        numbers[idx + 1] = numbers[idx];
+    if (idx < 0) {
+      break;
+    }
 
-        remainder -= numbers[idx];
+    numbers[idx]--;
+    remainder++;
 
-        idx++;
+    while (remainder > numbers[idx]) {
+      numbers[idx + 1] = numbers[idx];
+
+      remainder -= numbers[idx];
+
+      idx++;
+    }
+
+    numbers[++idx] = remainder;
+  }
+
+  return ans;
+}
+
+template <Filter TFilter>
+static Vector<Vector<int>> UniquePartitions(NegativeTag, int n, TFilter instance) {
+  struct TInvertedFilter {
+    TFilter impl;
+
+    bool operator()(Vector<int>& vec) {
+      for (auto& num : vec) {
+        num *= -1;
       }
 
-      numbers[++idx] = remainder;
-    }
+      bool ok = impl(vec);
 
-    return ans;
+      for (auto& num : vec) {
+        num *= -1;
+      }
+
+      return ok;        
+    }
+  };
+
+  TInvertedFilter filter {
+    .impl = std::move(instance)};
+
+  auto ans = UniquePartitions(PositiveTag{}, -n, std::move(filter));
+
+  for (auto& vec : ans) {
+    for (auto& num : vec) {
+      num *= -1;
+    }
   }
 
- private:
-  static void CommitChanges(Vector<Vector<int>>& dest, Vector<int> insertible, TFilter& checker) {
-    if (checker(insertible)) {
-      dest.push_back(std::move(insertible));
-    }
+  return ans;
+}
+
+} // namespace detail
+
+template <Filter TFilter>
+static std::vector<std::vector<int>> UniquePartitions(int n, TFilter instance = TFilter()) {
+  if (n >= 0) {
+    return detail::UniquePartitions(detail::PositiveTag{}, n, instance);
+  } else {
+    return detail::UniquePartitions(detail::NegativeTag{}, n, instance);
   }
-};
+}
 
 }  // namespace cmp_lattice::support

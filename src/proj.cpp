@@ -35,9 +35,9 @@ int main() {
 
         std::cin >> arg2;
 
-        if(arg1 < 0 || arg2 < 0) {
-            break;
-        }
+        // if(arg1 < 0 || arg2 < 0) {
+        //     break;
+        // }
 
         tffsa::StateMaker maker(arg1, arg2);
 

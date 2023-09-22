@@ -1,6 +1,5 @@
 #include <genproc/generator/tffsa/states_gen.hpp>
 
-#include <genproc/support/assert.hpp>
 #include <genproc/support/int_partitions.hpp>
 #include <genproc/support/join.hpp>
 
@@ -19,7 +18,6 @@ StateMaker::StateMaker(int momentum, int cutoff)
     : p_(momentum),
       l_(cutoff)
 {
-    Assert(p_ >= 0 && l_ >= 0, "Can't use negatives yet!");
 }
 
 std::pair<std::vector<StateType>, std::vector<StateType>>
@@ -49,9 +47,9 @@ std::vector<StateType> StateMaker::MakeTempRStates() {
     std::vector<StateType> temp_states{};
 
     for (int i = p_; boundary_checker(i); ++i) {
-        auto left = IntegerPartitions<DuplicateFree>::UniquePartitions(i, DuplicateFree());
+        auto left = UniquePartitions<DuplicateFree>(i);
 
-        auto right = IntegerPartitions<DuplicateFree>::UniquePartitions(i - p_, DuplicateFree());
+        auto right = UniquePartitions<DuplicateFree>(i - p_);
 
         for (auto& vector : right) {
             for (auto& elem : vector) {
@@ -97,9 +95,9 @@ std::vector<StateType> StateMaker::MakeTempNSStates() {
     std::vector<StateType> temp_states{};
 
     for (int idx = 2 * p_; boundary_check(idx); ++idx) {
-        auto left = IntegerPartitions<DupFreeOddAndInRange>::UniquePartitions(idx, {.p = p_, .l = l_});
+        auto left = UniquePartitions<DupFreeOddAndInRange>(idx, {.p = p_, .l = l_});
 
-        auto right = IntegerPartitions<DupFreeOddAndInRange>::UniquePartitions(idx - 2 * p_, {.p = p_, .l = l_});
+        auto right = UniquePartitions<DupFreeOddAndInRange>(idx - 2 * p_, {.p = p_, .l = l_});
 
         for (auto& vec : right) {
             for (auto& elem : vec) {
