@@ -1,27 +1,16 @@
 #include <genproc/generator/tffsa/states_gen.hpp>
 
-#include <genproc/support/int_partitions.hpp>
+#include <genproc/generator/tffsa//trig_factors.hpp>
 
 #include <fmt/core.h>
 
 #include <chrono>
 #include <iostream>
+#include "genproc/generator/tffsa/sectors.hpp"
 
 using namespace std::chrono_literals;
 
 using namespace cmp_lattice; // NOLINT
-
-struct Tester {
-  bool operator()(std::vector<int>& vec){
-    for(size_t i = 1; i < vec.size(); ++i){
-        if (vec[i - 1] == vec[i]) {
-            return false;
-        }
-    }
-
-    return true;
-  }
-};
 
 int main() {
     int arg1, arg2;
@@ -43,14 +32,25 @@ int main() {
 
         auto start = std::chrono::steady_clock::now();
 
-        auto [v1, v2] = maker.CreateStates();
+        auto [r_states, ns_states] = maker.CreateStates();
 
         auto finish = std::chrono::steady_clock::now();
 
         fmt::println("Time elapsed: {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count());
 
-        fmt::println("[");
-        for (auto& vec : v2) {
+        fmt::println("RStates: [");
+        for (auto& vec : r_states) {
+            fmt::print("[ ");
+            for(auto num : vec){
+                fmt::print("{} ", num);
+            }
+
+            fmt::println("]");
+        }
+        fmt::println("]");
+
+        fmt::println("NSStates: [");
+        for (auto& vec : ns_states) {
             fmt::print("[ ");
             for(auto num : vec){
                 fmt::print("{}/2 ", num);
@@ -59,6 +59,19 @@ int main() {
             fmt::println("]");
         }
         fmt::println("]");
+
+        for (auto& ns_state : ns_states) {
+            for (auto& r_state : r_states) {                
+                double ns_tan_factor = tffsa::TanFactor(ns_state, tffsa::Sector::NS, 1.0);
+                double r_tan_factor = tffsa::TanFactor(r_state, tffsa::Sector::R, 1.0);
+                double cot_factor = tffsa::CotFactor(tffsa::NSState(ns_state), tffsa::RState(r_state), 1.0);
+
+                fmt::println("NS Tan factor -> {}", ns_tan_factor);
+                fmt::println("R Tan factor -> {}", r_tan_factor);
+                fmt::println("Cot factor -> {}", cot_factor);
+            }
+        }
+
     }
 
 

@@ -14,6 +14,47 @@ using namespace support; // NOLINT;
 
 using StateType = StateMaker::StateType;
 
+  struct DuplicateFree {
+    bool operator()(StateType& vec) {
+        for (size_t i = 1; i < vec.size(); ++i) {
+            if (vec[i - 1] == vec[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+  };
+
+  struct DupFreeOddAndInRange {
+    bool operator()(StateType& vec) {
+        auto odd_in_range = [this] (int num) {
+            return (num % 2 == 1) &&
+                   (num >= 1) &&
+                   (num - p) * (num - p) <= p * p + l * l;
+        };
+
+        if(!odd_in_range(vec[0])) {
+            return false;
+        }
+
+        for (size_t i = 1; i < vec.size(); ++i) {
+            if (vec[i - 1] == vec[i]) {
+                return false;
+            }
+
+            if(!odd_in_range(vec[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    const int p;
+    const int l;
+  };
+
 StateMaker::StateMaker(int momentum, int cutoff)
     : p_(momentum),
       l_(cutoff)
