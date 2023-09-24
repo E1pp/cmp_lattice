@@ -2,11 +2,12 @@
 
 #include <genproc/generator/tffsa//trig_factors.hpp>
 
+#include <genproc/generator/tffsa/cached_factors.hpp>
+
 #include <fmt/core.h>
 
 #include <chrono>
 #include <iostream>
-#include "genproc/generator/tffsa/sectors.hpp"
 
 using namespace std::chrono_literals;
 
@@ -59,19 +60,6 @@ int main() {
             fmt::println("]");
         }
         fmt::println("]");
-
-        for (auto& ns_state : ns_states) {
-            for (auto& r_state : r_states) {                
-                double ns_tan_factor = tffsa::TanFactor(ns_state, tffsa::Sector::NS, 1.0);
-                double r_tan_factor = tffsa::TanFactor(r_state, tffsa::Sector::R, 1.0);
-                double cot_factor = tffsa::CotFactor(tffsa::NSState(ns_state), tffsa::RState(r_state), 1.0);
-
-                fmt::println("NS Tan factor -> {}", ns_tan_factor);
-                fmt::println("R Tan factor -> {}", r_tan_factor);
-                fmt::println("Cot factor -> {}", cot_factor);
-            }
-        }
-
     }
 
 
