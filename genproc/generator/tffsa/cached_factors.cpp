@@ -24,8 +24,6 @@ SFunction::SFunction(double r_min,
         stream >> var;
 
         vals_.push_back(var);
-
-        fmt::println("{}", var);
     }
 }
 
@@ -67,6 +65,8 @@ double KFunction::operator()(double r, double i)
     size_t r_idx = (r - min_) / dr_;
 
     assert(r_idx >= 0 && r_idx < vals_.size());
+
+    i = std::abs(i);
 
     size_t vec_idx = 2 * i;
 

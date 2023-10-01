@@ -1,8 +1,6 @@
 #include <genproc/generator/tffsa/states_gen.hpp>
 
-#include <genproc/generator/tffsa//trig_factors.hpp>
-
-#include <genproc/generator/tffsa/cached_factors.hpp>
+#include <genproc/generator/tffsa/make_matrix.hpp>
 
 #include <fmt/core.h>
 
@@ -15,6 +13,7 @@ using namespace cmp_lattice; // NOLINT
 
 int main() {
     int arg1, arg2;
+    double scaling;
 
     while (true) {
         fmt::print("Insert P -> ");
@@ -25,42 +24,18 @@ int main() {
 
         std::cin >> arg2;
 
-        // if(arg1 < 0 || arg2 < 0) {
-        //     break;
-        // }
+        fmt::print("Insert r -> ");
 
-        tffsa::StateMaker maker(arg1, arg2);
+        std::cin >> scaling;
 
-        auto start = std::chrono::steady_clock::now();
-
-        auto [r_states, ns_states] = maker.CreateStates();
-
-        auto finish = std::chrono::steady_clock::now();
-
-        fmt::println("Time elapsed: {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count());
-
-        fmt::println("RStates: [");
-        for (auto& vec : r_states) {
-            fmt::print("[ ");
-            for(auto num : vec){
-                fmt::print("{} ", num);
-            }
-
-            fmt::println("]");
+        if (scaling < 0.0) {
+            break;
         }
-        fmt::println("]");
 
-        fmt::println("NSStates: [");
-        for (auto& vec : ns_states) {
-            fmt::print("[ ");
-            for(auto num : vec){
-                fmt::print("{}/2 ", num);
-            }
+        tffsa::StartSeries(scaling, scaling + 0.1, 2, arg2, "/home/e1ppa/thesis/cmp_lattice/src");
 
-            fmt::println("]");
-        }
-        fmt::println("]");
+        auto matrix = tffsa::MakeMatrix(arg1, arg2, scaling);
+
+        std::cout << matrix << '\n';
     }
-
-
 }
