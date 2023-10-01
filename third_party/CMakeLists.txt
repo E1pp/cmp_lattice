@@ -60,3 +60,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(armadillo)
 
 # --------------------------------------------------------------------
+
+project_log("FetchContent: weave")
+
+FetchContent_Declare(
+        weave
+        GIT_REPOSITORY https://E1pp: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@github.com/E1pp/weave.git
+        GIT_TAG main
+)
+FetchContent_MakeAvailable(weave)
+
+# --------------------------------------------------------------------

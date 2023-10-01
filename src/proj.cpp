@@ -32,10 +32,16 @@ int main() {
             break;
         }
 
+        auto start = std::chrono::steady_clock::now();
+
         tffsa::StartSeries(scaling, scaling + 0.1, 2, arg2, "/home/e1ppa/thesis/cmp_lattice/src");
 
         auto matrix = tffsa::MakeMatrix(arg1, arg2, scaling);
 
-        std::cout << matrix << '\n';
+        auto finish = std::chrono::steady_clock::now();
+
+        fmt::println("Time passed: {} millis", std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count());
+
+        // std::cout << matrix << '\n';
     }
 }
