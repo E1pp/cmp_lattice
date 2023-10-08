@@ -1,1 +1,1 @@
-add_nontest_target(proj proj.cpp)
+add_nontest_target(main main.cpp)
