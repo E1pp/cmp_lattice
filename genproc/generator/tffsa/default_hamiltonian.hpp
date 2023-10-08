@@ -4,31 +4,28 @@
 
 namespace cmp_lattice::tffsa {
 
-class DefaultHamiltonian
-{
-public:
-    DefaultHamiltonian(
-        std::vector<std::vector<int>>& ns_states,
-        std::vector<std::vector<int>>& r_states,
-        double scaling);
+///////////////////////////////////////////////////////////////////////////////
 
-    std::complex<double> GetMatrixElement(size_t i, size_t j);
+class DefaultHamiltonian {
+ public:
+  DefaultHamiltonian(std::vector<std::vector<int>>& ns_states,
+                     std::vector<std::vector<int>>& r_states, double scaling);
 
-    static constexpr bool IsDiagonal()
-    {
-        return true;
-    }
+  std::complex<double> GetMatrixElement(size_t i, size_t j);
 
-    static void StartSeries(double r_min,
-        double r_max,
-        size_t r_n,
-        size_t lambda,
-        std::string path);
+  static constexpr bool IsDiagonal() {
+    return true;
+  }
 
-private:
-    std::vector<std::vector<int>>& ns_states_;
-    std::vector<std::vector<int>>& r_states_;
-    const double scaling_;
+  static void StartSeries(double r_min, double r_max, size_t r_n, size_t lambda,
+                          std::string path);
+
+ private:
+  std::vector<std::vector<int>>& ns_states_;
+  std::vector<std::vector<int>>& r_states_;
+  const double scaling_;
 };
 
-} // namespace cmp_lattice::tffsa
+///////////////////////////////////////////////////////////////////////////////
+
+}  // namespace cmp_lattice::tffsa

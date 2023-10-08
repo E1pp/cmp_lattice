@@ -4,14 +4,17 @@
 
 namespace cmp_lattice {
 
-arma::Col<double> Eigenvalues(arma::Mat<std::complex<double>>& matrix)
-{
-    arma::Col<double> vector;
-    auto status = arma::eig_sym(vector, matrix);
+///////////////////////////////////////////////////////////////////////////////
 
-    WHEELS_VERIFY(status, "Diagonalization failed!");
+arma::Col<double> Eigenvalues(arma::Mat<std::complex<double>>& matrix) {
+  arma::Col<double> vector;
+  auto status = arma::eig_sym(vector, matrix);
 
-    return vector;
+  WHEELS_VERIFY(status, "Diagonalization failed!");
+
+  return vector;
 }
 
-} // namespace cmp_lattice
+///////////////////////////////////////////////////////////////////////////////
+
+}  // namespace cmp_lattice

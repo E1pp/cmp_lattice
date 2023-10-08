@@ -4,21 +4,22 @@
 
 namespace cmp_lattice::tffsa {
 
-enum class Sector {
-    NS,
-    R
-};
+enum class Sector { NS, R };
 
 struct NSState {
-    explicit NSState(const std::vector<int>& vec) : impl(vec) {}
+  explicit NSState(const std::vector<int>& vec)
+      : impl(vec) {
+  }
 
-    const std::vector<int>& impl;
+  const std::vector<int>& impl;
 };
 
 struct RState {
-    explicit RState(const std::vector<int>& vec) : impl(vec) {}
+  explicit RState(const std::vector<int>& vec)
+      : impl(vec) {
+  }
 
-    const std::vector<int>& impl;
+  const std::vector<int>& impl;
 };
 
-} // namespace cmp_lattice::tffsa
+}  // namespace cmp_lattice::tffsa

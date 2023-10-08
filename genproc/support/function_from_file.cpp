@@ -6,44 +6,43 @@
 
 namespace cmp_lattice::support {
 
-FunctionFromFile::FunctionFromFile(double r_min,
-    double r_max,
-    size_t steps,
-    std::string_view path)
-    : r_min_(r_min)
-    , dr_([=] () -> double
-        {
-            if (steps == 1) {
-                WHEELS_VERIFY(r_min == r_max, "Can't have infinite lin steps!");
+///////////////////////////////////////////////////////////////////////////////
 
-                return 1;
-            }
+FunctionFromFile::FunctionFromFile(double r_min, double r_max, size_t steps,
+                                   std::string_view path)
+    : r_min_(r_min),
+      dr_([=]() -> double {
+        if (steps == 1) {
+          WHEELS_VERIFY(r_min == r_max, "Can't have infinite lin steps!");
 
-            return (r_max - r_min) / static_cast<double>(steps - 1);
-        }())
-{
-    vals_.reserve(steps);
+          return 1;
+        }
 
-    std::ifstream stream(path);
+        return (r_max - r_min) / static_cast<double>(steps - 1);
+      }()) {
+  vals_.reserve(steps);
 
-    for (size_t i = 0; i < steps ; ++i) {
-        double var = 0;
+  std::ifstream stream(path);
 
-        stream >> var;
+  for (size_t i = 0; i < steps; ++i) {
+    double var = 0;
 
-        vals_.push_back(var);
-    }
+    stream >> var;
+
+    vals_.push_back(var);
+  }
 }
 
-double FunctionFromFile::operator()(double r)
-{
-    size_t pos = (r - r_min_) / dr_;
+///////////////////////////////////////////////////////////////////////////////
 
-    WHEELS_VERIFY((pos >= 0 && pos <= vals_.size()), "Boundary check failed!");
+double FunctionFromFile::operator()(double r) {
+  size_t pos = (r - r_min_) / dr_;
 
-    return vals_[pos];
+  WHEELS_VERIFY((pos >= 0 && pos <= vals_.size()), "Boundary check failed!");
+
+  return vals_[pos];
 }
 
-} // namespace cmp_lattice::support
+///////////////////////////////////////////////////////////////////////////////
 
-
+}  // namespace cmp_lattice::support
