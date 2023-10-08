@@ -11,7 +11,7 @@ namespace cmp_lattice::support {
 
 //! Sends tasks into executor in batches
 template <typename Task, typename Executor>
-    requires std::is_invocable_r_v<void, Task>
+    requires std::is_invocable_r_v<void, Task> && std::is_base_of_v<weave::executors::IExecutor, Executor>
 class Batcher
 {
 public:
@@ -33,15 +33,6 @@ public:
         }
     }
 
-    void Flush()
-    {
-        auto status = weave::futures::no_alloc::All(std::move(batch_)) | weave::futures::ThreadAwait();
-
-        assert(status);
-
-        assert(batch_.empty());
-    }
-
     ~Batcher()
     {
         if (!batch_.empty()){
@@ -55,7 +46,45 @@ private:
     Executor& executor_;
     std::vector<FutureType> batch_;
     std::size_t batch_size_;
+
+    void Flush()
+    {
+        auto status = weave::futures::no_alloc::All(std::move(batch_)) | weave::futures::ThreadAwait();
+
+        assert(status);
+
+        assert(batch_.empty());
+    }
 };
 
+namespace detail {
+
+template <typename T>
+struct BatcherTraits : public std::false_type
+{};
+
+template <typename Task, typename Executor>
+    requires std::is_invocable_r_v<void, Task> && std::is_base_of_v<weave::executors::IExecutor, Executor>
+struct BatcherTraits<Batcher<Task, Executor>> : public std::true_type
+{
+    using TaskType = Task;
+    using ExecutorType = Executor;
+};
+
+} // namespace detail
 
 } // namespace cmp_lattice::support
+
+namespace cmp_lattice::traits {
+
+template <typename T>
+concept BatcherInstance = support::detail::BatcherTraits<T>::value;
+
+template <BatcherInstance T>
+using BatcherExecutor = typename support::detail::BatcherTraits<T>::ExecutorType;
+
+template <BatcherInstance T>
+using BatcherTask = typename support::detail::BatcherTraits<T>::TaskType;
+
+} // namespace cmp_lattice::traits
+

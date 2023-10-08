@@ -17,6 +17,10 @@ void StartSeries(double r_min,
     size_t lambda,
     std::string_view path)
 {
+    if (cached_functions) {
+        return;
+    }
+
     cached_functions.emplace(r_min, r_max, r_n, lambda, path);
 }
 

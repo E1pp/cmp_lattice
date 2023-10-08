@@ -15,14 +15,14 @@ struct PositiveTag {};
 struct NegativeTag {};
 
 template <Filter TFilter>
-static void CommitChanges(Vector<Vector<int>>& dest, Vector<int> insertible, TFilter& checker) {
+inline void CommitChanges(Vector<Vector<int>>& dest, Vector<int> insertible, TFilter& checker) {
   if (checker(insertible)) {
     dest.push_back(std::move(insertible));
   }
 }
 
 template <Filter TFilter>
-static Vector<Vector<int>> UniquePartitions(PositiveTag, int n, TFilter instance) {
+inline Vector<Vector<int>> UniquePartitions(PositiveTag, int n, TFilter instance) {
   if (n == 0) {
       return {{}};
   }
@@ -68,7 +68,7 @@ static Vector<Vector<int>> UniquePartitions(PositiveTag, int n, TFilter instance
 }
 
 template <Filter TFilter>
-static Vector<Vector<int>> UniquePartitions(NegativeTag, int n, TFilter instance) {
+inline Vector<Vector<int>> UniquePartitions(NegativeTag, int n, TFilter instance) {
   struct TInvertedFilter {
     TFilter impl;
 
@@ -104,7 +104,7 @@ static Vector<Vector<int>> UniquePartitions(NegativeTag, int n, TFilter instance
 } // namespace detail
 
 template <Filter TFilter>
-static std::vector<std::vector<int>> UniquePartitions(int n, TFilter instance = TFilter()) {
+inline std::vector<std::vector<int>> UniquePartitions(int n, TFilter instance = TFilter()) {
   if (n >= 0) {
     return detail::UniquePartitions(detail::PositiveTag{}, n, instance);
   } else {

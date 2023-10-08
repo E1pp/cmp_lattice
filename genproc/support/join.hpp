@@ -4,8 +4,6 @@
 
 #include <vector>
 
-#include <fmt/core.h>
-
 namespace cmp_lattice::support {
 
 template <Filter TFilter = Truer>

@@ -1,56 +1,35 @@
 #include "cached_factors.hpp"
 
-#include <cassert>
-#include <fstream>
+#include <wheels/core/assert.hpp>
 
-#include <fmt/core.h>
+#include <fstream>
 
 namespace cmp_lattice::tffsa {
 
-SFunction::SFunction(double r_min,
-    double r_max,
-    size_t r_n,
-    std::string_view path)
-    : min_(r_min)
-    , dr_((r_max - r_min) / static_cast<double>(r_n - 1))
-{
-    vals_.reserve(r_n);
-
-    std::ifstream stream(path);
-
-    for (size_t i = 0; i < r_n ; ++i) {
-        double var = 0;
-
-        stream >> var;
-
-        vals_.push_back(var);
-    }
-}
-
-double SFunction::operator()(double r)
-{
-    size_t pos = (r - min_) / dr_;
-
-    assert(pos >= 0 && pos <= vals_.size());
-
-    return vals_[pos];
-}
-
 KFunction::KFunction(double r_min,
     double r_max,
-    size_t r_n,
+    size_t r_steps,
     size_t lambda,
     std::string_view path)
-    : min_(r_min)
-    , dr_((r_max - r_min) / static_cast<double>(r_n - 1))
-    , lambda_(lambda)
+    : r_min_(r_min)
+    , dr_([=] () -> double
+    {
+        if (r_steps == 1) {
+            WHEELS_VERIFY(r_min == r_max, "Can't have infinite lin steps!");
+
+            return 1;
+        }
+
+        return (r_max - r_min) / static_cast<double>(r_steps - 1);
+    }())
+    , lambda_steps_(2 * lambda + 1)
 {
     std::ifstream stream(path);
 
-    vals_.reserve(r_n);
+    vals_.reserve(r_steps);
 
-    for (size_t i = 0; i < r_n; ++i) {
-        std::vector<double> row(2 * lambda_ + 1);
+    for (size_t i = 0; i < r_steps; ++i) {
+        std::vector<double> row(lambda_steps_);
 
         for (auto& val : row) {
             stream >> val;
@@ -62,15 +41,15 @@ KFunction::KFunction(double r_min,
 
 double KFunction::operator()(double r, double i)
 {
-    size_t r_idx = (r - min_) / dr_;
+    size_t r_idx = (r - r_min_) / dr_;
 
-    assert(r_idx >= 0 && r_idx < vals_.size());
+    WHEELS_VERIFY((r_idx >= 0 && r_idx < vals_.size()), "Boundary check for r failed!");
 
     i = std::abs(i);
 
     size_t vec_idx = 2 * i;
 
-    assert(vec_idx >= 0 && vec_idx <= 2 * lambda_);
+    WHEELS_VERIFY((vec_idx >= 0 && vec_idx < lambda_steps_), "Boundary check for vector comp failed!");
 
     return vals_[r_idx][vec_idx];
 }
