@@ -1,5 +1,7 @@
 #include "trig_factors.hpp"
 
+#include <numbers>
+
 namespace cmp_lattice::tffsa::detail {
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -18,7 +20,6 @@ double Cot(double x, double y) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// Maybe use cache here?
 double TanFactor(const std::vector<int>& state, Sector sector,
                  double scale_parameter) {
   if (state.size() < 2) {
@@ -31,8 +32,8 @@ double TanFactor(const std::vector<int>& state, Sector sector,
 
   for (size_t i = 0; i < state.size(); ++i) {
     for (size_t j = 0; j < i; ++j) {
-      product *= Tan(state[i] * sector_multiplier / scale_parameter,
-                     state[j] * sector_multiplier / scale_parameter);
+      product *= Tan(2 * std::numbers::pi * state[i] * sector_multiplier / scale_parameter,
+                     2 * std::numbers::pi * state[j] * sector_multiplier / scale_parameter);
     }
   }
 
@@ -54,7 +55,8 @@ double CotFactor(NSState ns_state, RState r_state, double scale_parameter) {
 
   for (auto num1 : state1) {
     for (auto num2 : state2) {
-      product *= Cot(num1 * 0.5 / scale_parameter, num2 / scale_parameter);
+      product *= Cot(2 * std::numbers::pi * num1 * 0.5 / scale_parameter,
+                     2 * std::numbers::pi * num2 / scale_parameter);
     }
   }
 

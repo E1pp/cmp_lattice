@@ -4,6 +4,7 @@
 
 #include <wheels/core/assert.hpp>
 
+#include <numbers>
 #include <optional>
 
 namespace cmp_lattice::tffsa {
@@ -47,7 +48,7 @@ std::complex<double> GetMatrixElement(std::vector<int>& state, Sector sector,
   std::complex<double> ham = GetSectorOffset(sector, scaling);
 
   for (auto elem : state) {
-    double expr = elem * sector_multiplier / scaling;
+    double expr = 2 * std::numbers::pi * elem * sector_multiplier / scaling;
 
     ham += std::sqrt(1 + std::pow(/*base=*/expr, /*exp=*/2));
   }

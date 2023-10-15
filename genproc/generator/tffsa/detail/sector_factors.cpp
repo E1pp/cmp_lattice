@@ -11,32 +11,32 @@ namespace cmp_lattice::tffsa::detail {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static std::optional<KFunction> cached_functions;
+static std::optional<KFunction> k_function;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void StartSeries(double r_min, double r_max, size_t r_n, size_t lambda,
                  std::string_view path) {
-  if (cached_functions) {
+  if (k_function) {
     return;
   }
 
-  cached_functions.emplace(r_min, r_max, r_n, lambda, path);
+  k_function.emplace(r_min, r_max, r_n, lambda, path);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 double MakePrefactor(double scale_parameter, double component, Sector sector) {
-  WHEELS_ASSERT(cached_functions.has_value(), "Must start series first!");
+  WHEELS_ASSERT(k_function.has_value(), "Must start series first!");
 
   double sector_prefactor = sector == Sector::R ? 1.0 : -1.0;
 
   double exponent =
-      sector_prefactor * ((*cached_functions)(scale_parameter, component));
+      sector_prefactor * ((*k_function)(scale_parameter, component));
 
-  double denominator = std::sqrt(
-      2 * std::numbers::pi *
-      std::sqrt(component * component + scale_parameter * scale_parameter));
+  double denominator = std::pow(
+    /*base=*/ std::pow(scale_parameter, 2) + std::pow(2 * std::numbers::pi * component, 2),
+    /*exp=*/ 0.25);
 
   return std::exp(exponent) / denominator;
 }

@@ -94,17 +94,37 @@ bool ShouldDoExperiment()
     return false;
 }
 
-auto DoExperiment(double r_min, double, size_t, int momentum, size_t lambda, double zeta)
+auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t lambda, double zeta)
 {
     auto start = std::chrono::steady_clock::now();
 
-    auto matrix = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r_min, zeta);
+    double delta = count == 1 ? 1 : (r_max - r_min) / (count - 1);
 
-    auto eigen = Eigenvalues(matrix);
+    std::vector<std::string> eigens{};
+
+    for (size_t iter = 0; iter < count; ++iter)
+    {
+        double r = r_min + iter * delta;
+
+        auto matrix = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r, zeta);
+
+        auto eigen = Eigenvalues(matrix);
+
+        std::string formatted_eigens = "R = " + std::to_string(r) + ": ";
+
+        for(size_t idx = 0; idx < 3 && idx < eigen.size(); ++idx)
+        {
+            formatted_eigens += std::to_string(eigen[idx]) + " ";
+        }
+
+        formatted_eigens.pop_back();
+
+        eigens.push_back(std::move(formatted_eigens));
+    }
 
     auto finish = std::chrono::steady_clock::now();
 
-    return std::make_pair(std::move(eigen), std::chrono::duration_cast<std::chrono::milliseconds>(finish - start));
+    return std::make_pair(std::move(eigens), std::chrono::duration_cast<std::chrono::milliseconds>(finish - start));
 }
 
 void ReportExperimentResults(auto eigen, std::chrono::milliseconds elapsed, std::string common_path)
@@ -116,7 +136,10 @@ void ReportExperimentResults(auto eigen, std::chrono::milliseconds elapsed, std:
 
     std::ofstream stream(path);
 
-    stream << eigen << std::endl;
+    for (auto& iter_result : eigen)
+    {
+        stream << iter_result << std::endl;
+    }
 }
 
 void DemoProgram()
