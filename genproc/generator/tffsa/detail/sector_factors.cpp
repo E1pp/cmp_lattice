@@ -29,13 +29,16 @@ void StartSeries(double r_min, double r_max, size_t r_n, size_t lambda,
 double MakePrefactor(double scale_parameter, double component, Sector sector) {
   WHEELS_ASSERT(k_function.has_value(), "Must start series first!");
 
-  double sector_prefactor = sector == Sector::R ? 1.0 : -1.0;
+  double sector_exp = sector == Sector::R ? 1.0 : -1.0;
+  double sector_mult = sector == Sector::R ? 1.0 : 0.5;
 
   double exponent =
-      sector_prefactor * ((*k_function)(scale_parameter, component));
+      sector_exp * ((*k_function)(scale_parameter, component * sector_mult));
+
+  double expr = 2 * std::numbers::pi * component * sector_mult;
 
   double denominator = std::pow(
-    /*base=*/ std::pow(scale_parameter, 2) + std::pow(2 * std::numbers::pi * component, 2),
+    /*base=*/ std::pow(/*base=*/ scale_parameter,/*exp=*/ 2.0) + std::pow(/*base=*/ expr,/*exp=*/ 2.0),
     /*exp=*/ 0.25);
 
   return std::exp(exponent) / denominator;
@@ -45,12 +48,10 @@ double MakePrefactor(double scale_parameter, double component, Sector sector) {
 
 double StateFactor(double scale_parameter, Sector sector,
                    const std::vector<int>& state) {
-  double sector_multiplier = sector == Sector::R ? 1.0 : 0.5;
-
   double result = 1.0;
 
   for (auto num : state) {
-    result *= MakePrefactor(scale_parameter, num * sector_multiplier, sector);
+    result *= MakePrefactor(scale_parameter, num, sector);
   }
 
   return result;

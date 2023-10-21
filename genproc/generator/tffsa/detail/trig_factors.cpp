@@ -8,13 +8,13 @@ namespace cmp_lattice::tffsa::detail {
 
 double Tan(double x, double y) {
   return (y - x) /
-         (std::sqrt(1 + std::pow(x, 2.0)) + std::sqrt(1 + std::pow(y, 2.0)));
+         (std::sqrt(1 + std::pow(/*base=*/ x, /*pow=*/ 2.0)) + std::sqrt(1 + std::pow(/*base=*/ y,/*pow=*/ 2.0)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 double Cot(double x, double y) {
-  return (std::sqrt(1 + std::pow(x, 2.0)) + std::sqrt(1 + std::pow(y, 2.0))) /
+  return (std::sqrt(1 + std::pow(/*base=*/ x,/*pow=*/ 2.0)) + std::sqrt(1 + std::pow(/*base=*/ y,/*pow=*/ 2.0))) /
          (x - y);
 }
 
