@@ -48,10 +48,12 @@ auto GetLinSpace()
 
 auto GetZeta()
 {
+    double eta;
     double zeta;
 
-    fmt::println("Please enter experiment parameters: perturbation factor:");
-    std::cin >> zeta;
+    fmt::println("Please enter experiment parameters: perturbation factor (eta):");
+    std::cin >> eta;
+    zeta = std::pow(/*base=*/ eta,/*pow=*/ -15.0/8.0);
 
     return zeta;
 }
@@ -65,6 +67,16 @@ auto GetEigenstatesParameters()
     std::cin >> momentum >> lambda;
 
     return std::make_pair(momentum, lambda);
+}
+
+auto GetMaximumEigenstates()
+{
+    size_t count;
+
+    fmt::println("Please enter number of eigenstates (-1 for unlimited):");
+    std::cin >> count;
+
+    return count;
 }
 
 void PrepareEnvironment(double r_min, double r_max, size_t points, size_t lambda, std::string common_path)
@@ -91,11 +103,19 @@ bool ShouldDoExperiment()
             WHEELS_PANIC("Unrecognized input!");
     }
 
+    WHEELS_UNREACHABLE();
+
     return false;
 }
 
-auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t lambda, double zeta)
+auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t lambda, double zeta, size_t max_eigens)
 {
+    fmt::println("Experiment started...");
+
+    wheels::Defer done([]{
+        fmt::println("Experiment finished.");
+    });
+
     auto start = std::chrono::steady_clock::now();
 
     double delta = count == 1 ? 1 : (r_max - r_min) / (count - 1);
@@ -110,9 +130,9 @@ auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t
 
         auto eigen = Eigenvalues(matrix);
 
-        std::string formatted_eigens = "R = " + std::to_string(r) + ": ";
+        std::string formatted_eigens = std::to_string(r) + " ";
 
-        for(size_t idx = 0; idx < 3 && idx < eigen.size(); ++idx)
+        for(size_t idx = 0; idx < max_eigens && idx < eigen.size(); ++idx)
         {
             formatted_eigens += std::to_string(eigen[idx]) + " ";
         }
@@ -155,9 +175,11 @@ void DemoProgram()
 
         auto [momentum, lambda] = GetEigenstatesParameters();
 
+        auto max_eigens = GetMaximumEigenstates();
+
         PrepareEnvironment(r_min, r_max, points, lambda, common_path);
 
-        auto [eigen, elapsed] = DoExperiment(r_min, r_max, points, momentum, lambda, zeta);
+        auto [eigen, elapsed] = DoExperiment(r_min, r_max, points, momentum, lambda, zeta, max_eigens);
 
         ReportExperimentResults(std::move(eigen), elapsed, common_path);
     }

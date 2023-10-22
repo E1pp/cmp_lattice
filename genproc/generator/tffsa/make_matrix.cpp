@@ -62,7 +62,7 @@ FillPerturbationMatrixTask::FillPerturbationMatrixTask(
 
 void FillPerturbationMatrixTask::operator()() noexcept {
   auto element =
-      pert_ * MatrixElement(NSState(ns_states_[i_]), RState(r_states_[j_]), s_);
+      s_ * pert_ * MatrixElement(NSState(ns_states_[i_]), RState(r_states_[j_]), s_);
 
   matrix_.at(i_, ns_states_.size() + j_) = element;
   matrix_.at(ns_states_.size() + j_, i_) = std::conj(element);
