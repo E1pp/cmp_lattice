@@ -1,5 +1,3 @@
-#include "demo_loop.hpp"
-
 #include <genproc/generator/tffsa/make_matrix.hpp>
 #include <genproc//generator//tffsa/default_hamiltonian.hpp>
 #include <genproc/processor/eigen.hpp>
@@ -11,8 +9,7 @@
 #include <tuple>
 
 using namespace std::chrono_literals;
-
-namespace cmp_lattice::program {
+using namespace cmp_lattice; // NOLINT
 
 void Greet()
 {
@@ -126,7 +123,8 @@ auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t
     {
         double r = r_min + iter * delta;
 
-        auto matrix = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r, zeta);
+        auto matrix 
+            = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r, zeta);
 
         auto eigen = Eigenvalues(matrix);
 
@@ -162,7 +160,7 @@ void ReportExperimentResults(auto eigen, std::chrono::milliseconds elapsed, std:
     }
 }
 
-void DemoProgram()
+int main()
 {
     Greet();
 
@@ -186,5 +184,3 @@ void DemoProgram()
 
     Farewell();
 }
-
-} // namespace cmp_lattice::program

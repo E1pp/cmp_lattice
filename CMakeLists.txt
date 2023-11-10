@@ -15,4 +15,4 @@ include(cmake/Test.cmake)
 
 add_subdirectory(genproc)
 
-add_subdirectory(src)
+add_subdirectory(program)

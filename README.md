@@ -7,8 +7,8 @@ cd cmp_lattice
 mkdir build && cd build
 # Generate build files
 cmake -DCMAKE_CXX_COMPILER=/usr/bin/clang++-15 -DCMAKE_C_COMPILER=/usr/bin/clang-15 ..
-# Build main
-make main
-# Run main
-./src/main
+# Build demo
+make demo
+# Run demo
+./program/demo
 ```
