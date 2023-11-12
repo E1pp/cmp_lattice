@@ -48,7 +48,7 @@ std::complex<double> MatrixElement(NSState ns_state, RState r_state,
 ///////////////////////////////////////////////////////////////////////////////
 
 FillPerturbationMatrixTask::FillPerturbationMatrixTask(
-    double perturb, double scale, arma::Mat<std::complex<double>>& mat,
+    std::complex<double> perturb, double scale, arma::Mat<std::complex<double>>& mat,
     size_t i, size_t j, std::vector<std::vector<int>>& ns,
     std::vector<std::vector<int>>& r)
     : pert_(perturb),
@@ -62,10 +62,10 @@ FillPerturbationMatrixTask::FillPerturbationMatrixTask(
 
 void FillPerturbationMatrixTask::operator()() noexcept {
   auto element =
-      s_ * pert_ * MatrixElement(NSState(ns_states_[i_]), RState(r_states_[j_]), s_);
+      s_ * MatrixElement(NSState(ns_states_[i_]), RState(r_states_[j_]), s_);
 
-  matrix_.at(i_, ns_states_.size() + j_) = element;
-  matrix_.at(ns_states_.size() + j_, i_) = std::conj(element);
+  matrix_.at(i_, ns_states_.size() + j_) = element * pert_;
+  matrix_.at(ns_states_.size() + j_, i_) = std::conj(element) * pert_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

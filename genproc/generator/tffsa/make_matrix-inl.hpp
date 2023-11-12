@@ -18,7 +18,7 @@ namespace detail {
 
 class FillPerturbationMatrixTask {
  public:
-  FillPerturbationMatrixTask(double perturb, double scale,
+  FillPerturbationMatrixTask(std::complex<double> perturb, double scale,
                              arma::Mat<std::complex<double>>& mat, size_t i,
                              size_t j, std::vector<std::vector<int>>& ns,
                              std::vector<std::vector<int>>& r);
@@ -26,7 +26,7 @@ class FillPerturbationMatrixTask {
   void operator()() noexcept;
 
  private:
-  const double pert_;
+  const std::complex<double> pert_;
   const double s_;
   arma::Mat<std::complex<double>>& matrix_;
   const size_t i_;
@@ -37,7 +37,7 @@ class FillPerturbationMatrixTask {
 
 template <typename Executor>
 requires std::is_base_of_v<weave::executors::IExecutor, Executor>
-void MakePerturbationMatrix(double perturbation_factor,
+void MakePerturbationMatrix(std::complex<double> perturbation_factor,
                             double scaling_parameter,
                             std::vector<std::vector<int>>& ns_states,
                             std::vector<std::vector<int>>& r_states,
@@ -119,7 +119,7 @@ template <Hamiltonian HamiltonianPolicy, typename Executor>
 requires std::is_base_of_v<weave::executors::IExecutor, Executor>
     arma::Mat<std::complex<double>> AsyncMakeMatrix(int momentum, int cutoff,
                                                     double scaling_parameter,
-                                                    double perturbation_factor,
+                                                    std::complex<double> perturbation_factor,
                                                     Executor& exe) {
   auto [r_states, ns_states] = StateMaker(momentum, cutoff).CreateStates();
   const size_t size = r_states.size() + ns_states.size();
@@ -144,7 +144,7 @@ requires std::is_base_of_v<weave::executors::IExecutor, Executor>
 template <Hamiltonian HamiltonianPolicy>
 arma::Mat<std::complex<double>> MakeMatrix(int momentum, int cutoff,
                                            double scaling_parameter,
-                                           double perturbation_factor) {
+                                           std::complex<double> perturbation_factor) {
   auto num_threads = std::thread::hardware_concurrency();
 
   weave::executors::tp::fast::ThreadPool pool{num_threads};

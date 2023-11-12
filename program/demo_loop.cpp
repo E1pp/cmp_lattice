@@ -132,7 +132,7 @@ auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t
 
         for(size_t idx = 0; idx < max_eigens && idx < eigen.size(); ++idx)
         {
-            formatted_eigens += std::to_string(eigen[idx]) + " ";
+            formatted_eigens += std::to_string(eigen[idx].real()) + " ";
         }
 
         formatted_eigens.pop_back();
