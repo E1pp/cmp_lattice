@@ -13,11 +13,13 @@ using namespace std::complex_literals;
 using namespace cmp_lattice; // NOLINT
 
 static constexpr auto kPathToData = "/home/e1ppa/thesis/cmp_lattice/data";
-static constexpr double kRmin = 0.05;
+static constexpr double kRmin = 0.005;
 static constexpr double kRmax = 15.0;
-static constexpr size_t kNumPoints = 2991; // Step = 0.005
-static constexpr double kSampleRmin = 0.5;
-static constexpr size_t kSampleSize = 2901; // Step = 0.005
+static constexpr size_t kNumPoints = 3000;
+
+static constexpr double kSampleStart = 1.0;
+static constexpr double kSampleEnd = 6.0;
+static constexpr size_t kSampleSize = 500;
 
 auto GetEigenstatesParameters()
 {
@@ -39,41 +41,34 @@ auto GetZeta()
 
     wheels::Defer report([=] {
         fmt::println("zeta -> {}i", h);
+        fmt::println("eta -> {} e^(4 i pi / 15)", std::pow(h, -8.0 / 15.0));
     });
 
     return h * 1.0i;
 }
 
-void PrepareEnvironment(double r_min, double r_max, size_t points, size_t lambda, std::string common_path)
+void PrepareEnvironment(size_t lambda, std::string common_path)
 {
-    fmt::println("Preparing experiment environment (r_min -> {}, r_max -> {}, points -> {}, l -> {})...", r_min, r_max, points, lambda);
-    tffsa::DefaultHamiltonian::StartSeries(r_min, r_max, points, lambda, common_path);
-    tffsa::StartSeries(r_min, r_max, points, lambda, common_path);   
+    fmt::println("Preparing experiment environment (r_min -> {}, r_max -> {}, points -> {}, l -> {})...", kRmin, kRmax, kNumPoints, lambda);
+    tffsa::DefaultHamiltonian::StartSeries(kRmin, kRmax, kNumPoints, lambda, common_path);
+    tffsa::StartSeries(kRmin, kRmax, kNumPoints, lambda, common_path);   
     fmt::println("Environment is prepared."); 
 }
 
-auto DoExperiment(int momentum, size_t lambda, std::complex<double> zeta)
+auto FindMass(int momentum, size_t lambda, std::complex<double> zeta)
 {
-    fmt::println("Beginning experiment...");
-    wheels::Defer finally([] {
-        fmt::println("Experiment complete!");
-    });
-
-    static constexpr double kDelta = 0.005;
+    static constexpr double kDelta = (kSampleEnd - kSampleStart) / (kSampleSize - 1);
 
     double h = zeta.imag();
-    double scaling = std::pow(/*base=*/ std::abs(h),/*pow=*/ 8 / 15);
+    double scaling = std::pow(/*base=*/ std::abs(h),/*pow=*/ 8.0 / 15.0);
 
     std::vector<double> r_data(kSampleSize, 0.0);
     std::vector<double> e1_data(kSampleSize, 0.0);
     std::vector<double> e2_data(kSampleSize, 0.0);
 
-    double im_e1 = 0;
-    double im_e2 = 0;
-
     for (size_t iter = 0; iter < kSampleSize; ++iter)
     {
-        double r = kSampleRmin + iter * kDelta;
+        double r = kSampleStart + iter * kDelta;
         r_data[iter] = r * scaling;
 
         auto matrix 
@@ -84,40 +79,51 @@ auto DoExperiment(int momentum, size_t lambda, std::complex<double> zeta)
             return a.real() < b.real();
         });
 
-        im_e1 += eigen[0].imag();
-        im_e2 += eigen[1].imag();
-
         e1_data[iter] = eigen[0].real() / scaling;
         e2_data[iter] = eigen[1].real() / scaling;
     }
 
-    im_e1 /= static_cast<double>(kSampleSize);
-    im_e2 /= static_cast<double>(kSampleSize);
+    auto [k1, b1] = support::FitLine(r_data, e1_data);
+    auto [k2, b2] = support::FitLine(r_data, e2_data);
 
-    auto [k1, e01] = support::FitLine(r_data, e1_data);
-    auto [k2, e02] = support::FitLine(r_data, e2_data);
-    fmt::println("E1 = {} * R + {}", k1, e01);
-    fmt::println("E2 = {} * R + {}", k2, e02);
-    fmt::println("dK = {}, M1 = {}", k2 - k1, e02 - e01);
-    fmt::println("Im(E1) = {}, Im(E2) = {}", im_e1, im_e2);
-    // 0.878563
-    std::vector<std::string> ans{};
-
-    for (size_t iter = 0; iter < kSampleSize; ++iter)
-    {
-        std::string str{};
-        str += std::to_string(r_data[iter]);
-        str += " " + std::to_string(e1_data[iter]);
-        str += " " + std::to_string(e2_data[iter]);
-    }
-
-    return ans;
+    return b2 - b1;
 }
 
-void RecordResult(auto result, std::string_view path)
+auto DoExperiment(int momentum, size_t lambda)
 {
-    std::ofstream stream(path);
+    fmt::println(
+        "Starting experiment (sample_start -> {}, sample_end -> {}, sample_size -> {}, l -> {})...",
+        kSampleStart, 
+        kSampleEnd,
+        kSampleSize,
+        lambda);
+    auto finally = wheels::Defer([] {
+        fmt::println("Experiment concluded.");
+    });
 
+    static constexpr double kMinZeta = 0.001;
+    static constexpr double kMaxZeta = 0.3;
+    static constexpr double kDelta = (kMaxZeta - kMinZeta) / (100);
+
+    std::vector<std::string> entries = {};
+    entries.reserve(static_cast<size_t>((kMaxZeta - kMinZeta) / kDelta) + 1);
+
+    for (double zeta = kMinZeta; zeta < kMaxZeta; zeta += kDelta) {
+        auto mass = FindMass(momentum, lambda, zeta * 1.0i);
+        fmt::println("Found mass (Zeta: {}i, Mass: {})", zeta, mass);
+
+        std::string entry = std::to_string(zeta) + "i" + " ";
+        entry += std::to_string(mass);
+        entries.push_back(std::move(entry));
+    }
+
+    return entries;
+}
+
+void RecordResult(auto result, std::string path)
+{
+    std::string common = path + "/out.txt";
+    std::ofstream stream(common);
     for (auto& iter_result : result)
     {
         stream << iter_result << std::endl;
@@ -127,9 +133,8 @@ void RecordResult(auto result, std::string_view path)
 int main()
 {
     auto [p, l] = GetEigenstatesParameters();
-    PrepareEnvironment(kRmin, kRmax, kNumPoints, l, kPathToData);
+    PrepareEnvironment(l, kPathToData);
 
-    auto zeta = GetZeta();
-    auto result = DoExperiment(p, l, zeta);
-    RecordResult(std::move(result), kPathToData);
+    auto result = DoExperiment(p, l);
+    RecordResult(result, kPathToData);
 }

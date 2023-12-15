@@ -6,10 +6,16 @@
 
 #include <chrono>
 #include <iostream>
+#include <numbers>
 #include <tuple>
 
 using namespace std::chrono_literals;
+using namespace std::complex_literals;
 using namespace cmp_lattice; // NOLINT
+
+static constexpr double kRmin = 0.005;
+static constexpr double kRmax = 15.0;
+static constexpr size_t kNumPoints = 3000;
 
 void Greet()
 {
@@ -45,14 +51,11 @@ auto GetLinSpace()
 
 auto GetZeta()
 {
-    double eta;
-    double zeta;
+    double h;
+    fmt::println("Please enter experiment parameters zeta = h * i. h:");
+    std::cin >> h;
 
-    fmt::println("Please enter experiment parameters: perturbation factor (eta):");
-    std::cin >> eta;
-    zeta = std::pow(/*base=*/ eta,/*pow=*/ -15.0/8.0);
-
-    return zeta;
+    return h * 1.0i;
 }
 
 auto GetEigenstatesParameters()
@@ -76,11 +79,11 @@ auto GetMaximumEigenstates()
     return count;
 }
 
-void PrepareEnvironment(double r_min, double r_max, size_t points, size_t lambda, std::string common_path)
+void PrepareEnvironment(size_t lambda, std::string common_path)
 {
     fmt::println("Preparing experiment environment...");
-    tffsa::DefaultHamiltonian::StartSeries(r_min, r_max, points, lambda, common_path);
-    tffsa::StartSeries(r_min, r_max, points, lambda, common_path);   
+    tffsa::DefaultHamiltonian::StartSeries(kRmin, kRmax, kNumPoints, lambda, common_path);
+    tffsa::StartSeries(kRmin, kRmax, kNumPoints, lambda, common_path);   
     fmt::println("Environment is prepared."); 
 }
 
@@ -105,7 +108,7 @@ bool ShouldDoExperiment()
     return false;
 }
 
-auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t lambda, double zeta, size_t max_eigens)
+auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t lambda, std::complex<double> zeta, size_t max_eigens)
 {
     fmt::println("Experiment started...");
 
@@ -175,7 +178,7 @@ int main()
 
         auto max_eigens = GetMaximumEigenstates();
 
-        PrepareEnvironment(r_min, r_max, points, lambda, common_path);
+        PrepareEnvironment(lambda, common_path);
 
         auto [eigen, elapsed] = DoExperiment(r_min, r_max, points, momentum, lambda, zeta, max_eigens);
 
