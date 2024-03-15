@@ -16,3 +16,5 @@ include(cmake/Test.cmake)
 add_subdirectory(genproc)
 
 add_subdirectory(program)
+
+add_subdirectory(tests)

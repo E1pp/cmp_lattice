@@ -63,8 +63,8 @@ StateMaker::StateMaker(int momentum, int cutoff)
 ///////////////////////////////////////////////////////////////////////////////
 
 std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>>
-StateMaker::CreateStates() {
-  return {RStates(), NSStates()};
+StateMaker::CreateStates(double mass) {
+  return {RStates(mass), NSStates()};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,14 +118,14 @@ std::vector<std::vector<int>> StateMaker::MakeTempRStates() {
 
 // Integers that add up to p_
 // and have sum of modules <= l_
-std::vector<std::vector<int>> StateMaker::RStates() {
+std::vector<std::vector<int>> StateMaker::RStates(double mass) {
   auto temp_states = MakeTempRStates();
 
   std::vector<std::vector<int>> r_states{};
 
   for (auto& state : temp_states) {
     if (IsValidEnergy(state, Sector::R)) {
-      if (state.size() % 2 != 0) {
+      if ((state.size() % 2 != 0) ^ (mass < 0)) {
         state.push_back(0);
       }
 

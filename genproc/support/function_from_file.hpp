@@ -9,16 +9,19 @@ namespace cmp_lattice::support {
 
 class FunctionFromFile {
  public:
-  FunctionFromFile(double r_min, double r_max, size_t r_n,
-                   std::string_view path);
+  FunctionFromFile(double x_min, double x_max, size_t point_count, std::string_view path);
 
-  double operator()(double r);
+  double operator()(double x);
 
  private:
-  const double r_min_;
-  const double dr_;
+  const double x_min_;
+  const double dx_;
 
   std::vector<double> vals_;
+
+  static double GetStep(double x_min, double x_max, size_t point_count);
+
+  void ReadFile(size_t point_count, std::string_view path);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

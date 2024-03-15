@@ -17,9 +17,9 @@ static constexpr double kRmin = 0.005;
 static constexpr double kRmax = 15.0;
 static constexpr size_t kNumPoints = 3000;
 
-static constexpr double kSampleStart = 1.0;
-static constexpr double kSampleEnd = 6.0;
-static constexpr size_t kSampleSize = 500;
+static constexpr double kSampleStart = 10.0;
+static constexpr double kSampleEnd = 15.0;
+static constexpr size_t kSampleSize = 100;
 
 auto GetEigenstatesParameters()
 {
@@ -59,34 +59,28 @@ auto FindMass(int momentum, size_t lambda, std::complex<double> zeta)
 {
     static constexpr double kDelta = (kSampleEnd - kSampleStart) / (kSampleSize - 1);
 
-    double h = zeta.imag();
-    double scaling = std::pow(/*base=*/ std::abs(h),/*pow=*/ 8.0 / 15.0);
-
     std::vector<double> r_data(kSampleSize, 0.0);
-    std::vector<double> e1_data(kSampleSize, 0.0);
-    std::vector<double> e2_data(kSampleSize, 0.0);
+    std::vector<double> delta_e_data(kSampleSize, 0.0);
 
     for (size_t iter = 0; iter < kSampleSize; ++iter)
     {
         double r = kSampleStart + iter * kDelta;
-        r_data[iter] = r * scaling;
+        r_data[iter] = r;
 
         auto matrix 
-            = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r, zeta);
+            = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r, zeta, -1);
 
         auto eigen = Eigenvalues(matrix);
         std::sort(eigen.begin(), eigen.end(), [] (const auto& a, const auto& b) {
             return a.real() < b.real();
         });
 
-        e1_data[iter] = eigen[0].real() / scaling;
-        e2_data[iter] = eigen[1].real() / scaling;
+        delta_e_data[iter] = eigen[1].real() - eigen[0].real();
     }
 
-    auto [k1, b1] = support::FitLine(r_data, e1_data);
-    auto [k2, b2] = support::FitLine(r_data, e2_data);
+    auto [k, b] = support::FitLine(r_data, delta_e_data);
 
-    return b2 - b1;
+    return b;
 }
 
 auto DoExperiment(int momentum, size_t lambda)
@@ -101,8 +95,8 @@ auto DoExperiment(int momentum, size_t lambda)
         fmt::println("Experiment concluded.");
     });
 
-    static constexpr double kMinZeta = 0.001;
-    static constexpr double kMaxZeta = 0.3;
+    static constexpr double kMinZeta = 0.1;
+    static constexpr double kMaxZeta = 0.2;
     static constexpr double kDelta = (kMaxZeta - kMinZeta) / (100);
 
     std::vector<std::string> entries = {};

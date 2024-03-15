@@ -15,7 +15,7 @@ class StateMaker {
 
   // RStates, NSStates
   std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>>
-  CreateStates();
+  CreateStates(double mass);
 
  private:
   const int p_;
@@ -24,7 +24,7 @@ class StateMaker {
   bool IsValidEnergy(std::vector<int>& state, Sector sector);
 
   std::vector<std::vector<int>> MakeTempRStates();
-  std::vector<std::vector<int>> RStates();
+  std::vector<std::vector<int>> RStates(double mass);
 
   std::vector<std::vector<int>> MakeTempNSStates();
   std::vector<std::vector<int>> NSStates();

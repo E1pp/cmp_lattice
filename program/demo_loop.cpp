@@ -49,13 +49,18 @@ auto GetLinSpace()
     return std::make_tuple(r_min, r_max, points);
 }
 
-auto GetZeta()
+auto GetZetaAndMass()
 {
     double h;
-    fmt::println("Please enter experiment parameters zeta = h * i. h:");
+    double m;
+    fmt::println("Please enter experiment parameters: zeta = h * i. h:");
     std::cin >> h;
+    fmt::println("Please enter experiment parameters: m = +-1. m:");
+    std::cin >> m;
 
-    return h * 1.0i;
+    WHEELS_VERIFY(m == 1.0 || m == -1.0, "Wrong mass!"); // NOLINT
+
+    return std::pair(h * 1.0i, m);
 }
 
 auto GetEigenstatesParameters()
@@ -108,7 +113,7 @@ bool ShouldDoExperiment()
     return false;
 }
 
-auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t lambda, std::complex<double> zeta, size_t max_eigens)
+auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t lambda, std::complex<double> zeta, double mass, size_t max_eigens)
 {
     fmt::println("Experiment started...");
 
@@ -127,7 +132,7 @@ auto DoExperiment(double r_min, double r_max, size_t count, int momentum, size_t
         double r = r_min + iter * delta;
 
         auto matrix 
-            = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r, zeta);
+            = tffsa::MakeMatrix<tffsa::DefaultHamiltonian>(momentum, lambda, r, zeta, mass);
 
         auto eigen = Eigenvalues(matrix);
 
@@ -172,7 +177,7 @@ int main()
     while (ShouldDoExperiment()) {
         auto [r_min, r_max, points] = GetLinSpace();
 
-        auto zeta = GetZeta();
+        auto [zeta, mass] = GetZetaAndMass();
 
         auto [momentum, lambda] = GetEigenstatesParameters();
 
@@ -180,7 +185,7 @@ int main()
 
         PrepareEnvironment(lambda, common_path);
 
-        auto [eigen, elapsed] = DoExperiment(r_min, r_max, points, momentum, lambda, zeta, max_eigens);
+        auto [eigen, elapsed] = DoExperiment(r_min, r_max, points, momentum, lambda, zeta, mass, max_eigens);
 
         ReportExperimentResults(std::move(eigen), elapsed, common_path);
     }

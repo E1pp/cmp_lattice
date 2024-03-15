@@ -1,0 +1,4 @@
+add_test_target(fit_line_unit_test support/fit_line_unit.cpp)
+add_test_target(func_from_file_unit_test support/func_from_file_unit.cpp)
+add_test_target(join_unit_test support/join_unit.cpp)
+add_test_target(partition_unit_test support/partition_unit.cpp)

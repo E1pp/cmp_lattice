@@ -120,8 +120,9 @@ requires std::is_base_of_v<weave::executors::IExecutor, Executor>
     arma::Mat<std::complex<double>> AsyncMakeMatrix(int momentum, int cutoff,
                                                     double scaling_parameter,
                                                     std::complex<double> perturbation_factor,
+                                                    double mass,
                                                     Executor& exe) {
-  auto [r_states, ns_states] = StateMaker(momentum, cutoff).CreateStates();
+  auto [r_states, ns_states] = StateMaker(momentum, cutoff).CreateStates(mass);
   const size_t size = r_states.size() + ns_states.size();
   arma::Mat<std::complex<double>> matrix(size, size, arma::fill::value(0.0));
 
@@ -144,14 +145,15 @@ requires std::is_base_of_v<weave::executors::IExecutor, Executor>
 template <Hamiltonian HamiltonianPolicy>
 arma::Mat<std::complex<double>> MakeMatrix(int momentum, int cutoff,
                                            double scaling_parameter,
-                                           std::complex<double> perturbation_factor) {
+                                           std::complex<double> perturbation_factor,
+                                           double mass) {
   auto num_threads = std::thread::hardware_concurrency();
 
   weave::executors::tp::fast::ThreadPool pool{num_threads};
   pool.Start();
 
   auto matrix = detail::AsyncMakeMatrix<HamiltonianPolicy>(
-      momentum, cutoff, scaling_parameter, perturbation_factor, pool);
+      momentum, cutoff, scaling_parameter, perturbation_factor, mass, pool);
 
   pool.Stop();
 

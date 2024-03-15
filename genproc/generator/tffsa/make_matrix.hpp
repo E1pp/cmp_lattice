@@ -27,7 +27,8 @@ concept Hamiltonian = requires(T ham, std::vector<std::vector<int>>& ns_states,
 template <Hamiltonian HamiltonianPolicy>
 arma::Mat<std::complex<double>> MakeMatrix(int momentum, int cutoff,
                                            double scaling_parameter,
-                                           std::complex<double> perturbation_factor);
+                                           std::complex<double> perturbation_factor,
+                                           double mass = 1);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
