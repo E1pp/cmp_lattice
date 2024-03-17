@@ -13,7 +13,7 @@ add_subdirectory(third_party)
 
 include(cmake/Test.cmake)
 
-add_subdirectory(genproc)
+add_subdirectory(include)
 
 add_subdirectory(program)
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <genproc/support/function_from_file.hpp>
+#include <include/support/function_from_file.hpp>
 
 namespace cmp_lattice::tffsa::detail {
 

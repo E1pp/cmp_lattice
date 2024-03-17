@@ -4,9 +4,9 @@
 #include "make_matrix.hpp"
 #endif
 
-#include <genproc/generator/tffsa/detail/states_gen.hpp>
+#include <include/generator/tffsa/detail/states_gen.hpp>
 
-#include <genproc/support/batcher.hpp>
+#include <include/support/batcher.hpp>
 
 #include <weave/executors/thread_pool.hpp>
 

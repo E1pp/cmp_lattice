@@ -1,8 +1,8 @@
 #include "make_matrix.hpp"
 
-#include <genproc/generator/tffsa/detail/cached_factors.hpp>
-#include <genproc/generator/tffsa/detail/form_factor.hpp>
-#include <genproc/generator/tffsa/detail/sector_factors.hpp>
+#include <include/generator/tffsa/detail/cached_factors.hpp>
+#include <include/generator/tffsa/detail/form_factor.hpp>
+#include <include/generator/tffsa/detail/sector_factors.hpp>
 
 #include <weave/executors/thread_pool.hpp>
 

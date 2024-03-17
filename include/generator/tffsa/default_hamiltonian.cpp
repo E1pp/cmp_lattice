@@ -1,6 +1,6 @@
 #include "default_hamiltonian.hpp"
 
-#include <genproc/generator/tffsa/detail/cached_factors.hpp>
+#include <include/generator/tffsa/detail/cached_factors.hpp>
 
 #include <wheels/core/assert.hpp>
 

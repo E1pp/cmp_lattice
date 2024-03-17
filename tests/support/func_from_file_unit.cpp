@@ -1,4 +1,4 @@
-#include <genproc/support/function_from_file.hpp>
+#include <include/support/function_from_file.hpp>
 
 #include <wheels/test/framework.hpp>
 

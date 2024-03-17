@@ -1,6 +1,6 @@
 #include <fmt/core.h>
 
-#include <genproc/support/fit_line.hpp>
+#include <include/support/fit_line.hpp>
 
 using namespace cmp_lattice; // NOLINT
 

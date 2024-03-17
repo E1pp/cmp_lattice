@@ -1,10 +1,10 @@
 # --------------------------------------------------------------------
 
-set(LIB_TARGET genproc)
+set(LIB_TARGET cmp_lattice)
 
 # --------------------------------------------------------------------
 
-# Sources & Includes
+# Sources & Includess
 
 get_filename_component(LIB_INCLUDE_PATH ".." ABSOLUTE)
 get_filename_component(LIB_PATH "." ABSOLUTE)
@@ -22,7 +22,6 @@ target_include_directories(${LIB_TARGET} PUBLIC ${LIB_INCLUDE_PATH})
 set(LIB_DEPENDENCIES
         armadillo
         fmt
-        expected
         weave)
 
 target_link_libraries(${LIB_TARGET} PUBLIC ${LIB_DEPENDENCIES})

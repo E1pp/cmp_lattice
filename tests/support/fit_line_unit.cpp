@@ -1,4 +1,4 @@
-#include <genproc/support/fit_line.hpp>
+#include <include/support/fit_line.hpp>
 
 #include <wheels/test/framework.hpp>
 

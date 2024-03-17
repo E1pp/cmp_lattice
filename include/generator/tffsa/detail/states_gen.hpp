@@ -1,6 +1,6 @@
 #pragma once
 
-#include <genproc/generator/tffsa/sectors.hpp>
+#include <include/generator/tffsa/sectors.hpp>
 
 #include <tuple>
 #include <vector>

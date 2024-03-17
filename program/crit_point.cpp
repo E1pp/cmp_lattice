@@ -1,9 +1,9 @@
-#include <genproc/generator/tffsa/make_matrix.hpp>
-#include <genproc//generator//tffsa/default_hamiltonian.hpp>
+#include <include/generator/tffsa/make_matrix.hpp>
+#include <include//generator//tffsa/default_hamiltonian.hpp>
 
-#include <genproc/processor/eigen.hpp>
+#include <include/processor/eigen.hpp>
 
-#include <genproc/support/fit_line.hpp>
+#include <include/support/fit_line.hpp>
 
 #include <numbers>
 #include <string>

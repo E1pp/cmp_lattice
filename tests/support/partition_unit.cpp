@@ -1,4 +1,4 @@
-#include <genproc/support/int_partitions.hpp>
+#include <include/support/int_partitions.hpp>
 
 #include <wheels/test/framework.hpp>
 

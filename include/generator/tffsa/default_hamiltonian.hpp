@@ -1,6 +1,6 @@
 #pragma once
 
-#include <genproc/generator/tffsa/make_matrix.hpp>
+#include <include/generator/tffsa/make_matrix.hpp>
 
 namespace cmp_lattice::tffsa {
 

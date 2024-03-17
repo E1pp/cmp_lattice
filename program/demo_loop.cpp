@@ -1,6 +1,6 @@
-#include <genproc/generator/tffsa/make_matrix.hpp>
-#include <genproc//generator//tffsa/default_hamiltonian.hpp>
-#include <genproc/processor/eigen.hpp>
+#include <include/generator/tffsa/make_matrix.hpp>
+#include <include//generator//tffsa/default_hamiltonian.hpp>
+#include <include/processor/eigen.hpp>
 
 #include <fmt/core.h>
 

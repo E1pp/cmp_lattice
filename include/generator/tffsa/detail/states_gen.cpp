@@ -1,7 +1,7 @@
 #include "states_gen.hpp"
 
-#include <genproc/support/int_partitions.hpp>
-#include <genproc/support/join.hpp>
+#include <include/support/int_partitions.hpp>
+#include <include/support/join.hpp>
 
 #include <numeric>
 
