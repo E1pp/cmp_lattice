@@ -8,6 +8,19 @@ using namespace cmp_lattice; // NOLINT
 
 std::complex<double> MakeZeta(double abs, double phase)
 {
+    // Some common sense cases made exact.
+    if (phase == 0.5) {
+        return abs * 1.0i;
+    }
+    if (phase == 0.0) {
+        return abs;
+    }
+    if (phase == 1.0) {
+        return -abs;
+    }
+    if (phase == 1.5) {
+        return -abs * 1.0i;
+    }
     return abs * std::exp(1.0i * std::numbers::pi * phase);
 }
 
@@ -40,7 +53,9 @@ tffsa::GenerateSpectrumParameters MakeParams(char* argv[]) {
 
 int main(int argc, char* argv[]) {
     if (argc < 13) {
-        std::cerr << "Usage: " << argv[0] << " [cached_grid_r_min] [cached_grid_r_max] [cached_grid_points_count] [r_min] [r_max] [points_count] [momentum] [lambda] [zeta_abs] [zeta_phase] [mass] [eigen_count] [(optional) path_to_data_folder] [(optional) path_to_out_folder]" << '\n';
+        std::cerr << "Usage: "
+                  << argv[0]
+                  << " [cached_grid_r_min_1] [cached_grid_r_max_2] [cached_grid_points_count_3] [r_min_4] [r_max_5] [points_count_6] [momentum_7] [lambda_8] [zeta_abs_9] [zeta_phase_10] [mass_11] [eigen_count_12] [(optional) path_to_data_folder_13] [(optional) path_to_out_folder_14]" << '\n';
         return -1;
     }
 
