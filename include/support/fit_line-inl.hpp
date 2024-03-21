@@ -25,12 +25,12 @@ std::tuple<T, T> FitLine(const std::vector<T>& x_data, const std::vector<T>& y_d
     T xy_tot = std::inner_product(x_data.begin(), x_data.end(), y_data.begin(), kZero);
     T xx_tot = std::inner_product(x_data.begin(), x_data.end(), x_data.begin(), kZero);
 
-    T k_denominator = points_count * xx_tot - std::pow(/*base=*/ x_tot, /*pow=*/ 2.0);
-    WHEELS_VERIFY(k_denominator != 0, "Horizontal line detected");
+    T k_denominator = static_cast<double>(points_count) * xx_tot - std::pow(/*base=*/ x_tot, /*pow=*/ 2.0);
+    WHEELS_VERIFY(k_denominator != static_cast<T>(0), "Horizontal line detected");
 
-    double k = (points_count * xy_tot - x_tot * y_tot) / k_denominator;
+    T k = (static_cast<double>(points_count) * xy_tot - x_tot * y_tot) / k_denominator;
 
-    double b = (y_tot - k * x_tot) / static_cast<double>(points_count);
+    T b = (y_tot - k * x_tot) / static_cast<double>(points_count);
 
     return std::make_pair(k, b);
 }

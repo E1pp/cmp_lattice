@@ -1,9 +1,13 @@
 #pragma once
 
+#include <armadillo>
+
 #include <complex>
 #include <filesystem>
 
 namespace cmp_lattice::tffsa {
+
+///////////////////////////////////////////////////////////////////////////////
 
 struct GridParameters {
     double r_min;
@@ -11,11 +15,19 @@ struct GridParameters {
     size_t points_count;
 };
 
+double MakeDelta(GridParameters grid);
+
+///////////////////////////////////////////////////////////////////////////////
+
 struct CachedFunctionsParameters {
     GridParameters cached_grid;
     int lambda;
     std::filesystem::path common_path;
 };
+
+void PrepareCachedFunctions(CachedFunctionsParameters params);
+
+///////////////////////////////////////////////////////////////////////////////
 
 struct MatrixGenerationParameters {
     int momentum;
@@ -25,9 +37,9 @@ struct MatrixGenerationParameters {
     double mass;
 };
 
-struct MatrixSerialParameters {
-    MatrixGenerationParameters def;
-    GridParameters grid;
-};
+arma::Mat<std::complex<double>>
+GenerateMatrix(MatrixGenerationParameters params);
+
+///////////////////////////////////////////////////////////////////////////////
 
 } // namespace cmp_lattice::tffsa

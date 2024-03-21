@@ -32,21 +32,19 @@ tffsa::GenerateSpectrumParameters MakeParams(char* argv[]) {
                 .r_max = std::stod(argv[2]),
                 .points_count = static_cast<size_t>(std::stoi(argv[3])),
             },
-            .lambda = std::stoi(argv[8]),
+            .lambda = 20,
         },
-        .matrix = tffsa::MatrixSerialParameters{
-            .def = tffsa::MatrixGenerationParameters{
-                .momentum = std::stoi(argv[7]),
-                .lambda = std::stoi(argv[8]),
-                .scaling = 0,
-                .zeta = MakeZeta(std::stod(argv[9]), std::stod(argv[10])),
-                .mass = std::stod(argv[11]),
-            },
-            .grid = tffsa::GridParameters{
-                .r_min = std::stod(argv[4]),
-                .r_max = std::stod(argv[5]),
-                .points_count = static_cast<size_t>(std::stoi(argv[6])),
-            },
+        .sampling_grid = tffsa::GridParameters{
+            .r_min = std::stod(argv[4]),
+            .r_max = std::stod(argv[5]),
+            .points_count = static_cast<size_t>(std::stoi(argv[6])),
+        },
+        .matrix = tffsa::MatrixGenerationParameters{
+            .momentum = std::stoi(argv[7]),
+            .lambda = std::stoi(argv[8]),
+            .scaling = 0,
+            .zeta = MakeZeta(std::stod(argv[9]), std::stod(argv[10])),
+            .mass = std::stod(argv[11]),
         },
     };
 }
@@ -80,7 +78,7 @@ int main(int argc, char* argv[]) {
         
         int count = 0;
         for (const auto& val : exp_step) {
-            row += std::to_string(val.real()) + " ";
+            row += std::to_string(val.real()) + "+I*" + std::to_string(val.imag()) + " ";
             if (++count == eigen_count) {
                 break;
             }
