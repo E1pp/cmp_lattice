@@ -21,6 +21,14 @@ arma::Col<std::complex<double>> Eigenvalues(arma::Mat<std::complex<double>>& mat
   arma::Col<std::complex<double>> vector;
   arma::eig_gen(vector, matrix);
 
+  std::sort(std::begin(vector), std::end(vector), [] (const auto& a, const auto& b) {
+    if (a.real() == b.real()) {
+      return a.imag() < b.imag();
+    }
+
+    return a.real() < b.real();
+  });
+
   return vector;
 }
 
